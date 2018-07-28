@@ -10,3 +10,5 @@ while True:
     #  Send reply back to client
     socket.send_string(msg)
     # socket.send(b"WORLD\r\n")
+    message = socket.recv()
+    print("Received message: %s" % message)

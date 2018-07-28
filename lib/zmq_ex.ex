@@ -24,7 +24,8 @@ defmodule ZmqEx do
     IO.inspect msg3
 
     ready(socket)
-    recv(socket)
+    send? = check_ready(socket)
+    recv(socket, send?)
   end
 
   def ready(socket) do
@@ -32,14 +33,31 @@ defmodule ZmqEx do
 
   end
 
-  def recv(socket) do
+  def check_ready(socket) do
+    {:ok, msg} = :gen_tcp.recv(socket, 0)
+    IO.inspect msg
+    case msg do
+      <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", data :: binary >> -> :send
+      _ -> :dont_send
+    end
+  end
+
+  def recv(socket, send?) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
     IO.inspect msg
     dmsg = decode msg
     IO.inspect dmsg
+    if (send? == :send) do
+      reply = IO.gets "Please enter something: "
+      enc_reply = encode(reply)
+      IO.inspect enc_reply
+      :gen_tcp.send(socket, enc_reply)
+    end
     # :gen_tcp.send(socket, msg)
-    recv(socket)
+    recv(socket, send?)
   end
+
+  def encode(msg), do: <<0, byte_size(msg) :: size(8), msg :: binary>>
 
   def decode(<<4, s :: size(8),
                 comm_size, comm :: binary - size(comm_size),
