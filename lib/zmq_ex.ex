@@ -8,10 +8,42 @@ defmodule ZmqEx do
   def start do
     opts = [:binary, active: false]
     {:ok, socket} = :gen_tcp.connect('localhost', 5555, opts)
-    start_recv socket
+    pid = spawn fn -> printer_loop() end
+    send? = start_connection(socket)
+    spawn fn -> rec_loop(socket, pid) end
+    if (send? === :send) do
+      send_loop(socket)
+    end
   end
 
-  def start_recv(socket) do
+  defp printer_loop do
+    receive do
+      {:rec_message, value} ->
+        IO.puts "GOT MESSAGE!"
+        IO.inspect value
+        IO.puts "======="
+        printer_loop()
+        _ -> 
+          IO.puts "wrong msg"
+          printer_loop()
+    end
+  end
+
+  defp send_loop(socket) do
+      reply = IO.gets "Please enter something: "
+      enc_reply = encode(reply)
+      :gen_tcp.send(socket, enc_reply)
+    send_loop(socket)
+  end
+
+  defp rec_loop(socket, pid) do
+    {:ok, msg} = :gen_tcp.recv(socket, 0)
+    dmsg = decode msg
+    send(pid, {:rec_message, dmsg})
+    rec_loop(socket, pid)
+  end
+
+  defp start_connection(socket) do
     {:ok, msg1} = :gen_tcp.recv(socket, 0)
     :gen_tcp.send(socket, msg1)
     {:ok, msg2} = :gen_tcp.recv(socket, 0)
@@ -19,25 +51,17 @@ defmodule ZmqEx do
     {:ok, msg3} = :gen_tcp.recv(socket, 0)
     :gen_tcp.send(socket, msg3)
 
-    IO.inspect msg1
-    IO.inspect msg2
-    IO.inspect msg3
-
     ready(socket)
-    send? = check_ready(socket)
-    recv(socket, send?)
+    check_ready(socket)
   end
 
-  def ready(socket) do
-    :gen_tcp.send(socket, <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", 0, 0, 0 ,0>>)
-
-  end
+  defp ready(socket), do: :gen_tcp.send(socket, <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", 0, 0, 0 ,0>>)
 
   def check_ready(socket) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
     IO.inspect msg
     case msg do
-      <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", data :: binary >> -> :send
+      <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", _data :: binary >> -> :send
       _ -> :dont_send
     end
   end
