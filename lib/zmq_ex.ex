@@ -8,10 +8,11 @@ defmodule ZmqEx do
   def start do
     opts = [:binary, active: false]
     {:ok, socket} = :gen_tcp.connect('localhost', 5555, opts)
-    pid = spawn fn -> printer_loop() end
+    printer_process = spawn(fn -> printer_loop() end)
     send? = start_connection(socket)
-    spawn fn -> rec_loop(socket, pid) end
-    if (send? === :send) do
+    spawn(fn -> rec_loop(socket, printer_process) end)
+
+    if send? == true do
       send_loop(socket)
     end
   end
@@ -19,26 +20,27 @@ defmodule ZmqEx do
   defp printer_loop do
     receive do
       {:rec_message, value} ->
-        IO.puts "GOT MESSAGE!"
-        IO.inspect value
-        IO.puts "======="
+        IO.puts("GOT MESSAGE!")
+        IO.inspect(value)
+        IO.puts("=======")
         printer_loop()
-        _ -> 
-          IO.puts "wrong msg"
-          printer_loop()
+
+      _ ->
+        IO.puts("wrong msg")
+        printer_loop()
     end
   end
 
   defp send_loop(socket) do
-      reply = IO.gets "Please enter something: "
-      enc_reply = encode(reply)
-      :gen_tcp.send(socket, enc_reply)
+    reply = IO.gets("Please enter something: ")
+    enc_reply = encode(reply)
+    :gen_tcp.send(socket, enc_reply)
     send_loop(socket)
   end
 
   defp rec_loop(socket, pid) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
-    dmsg = decode msg
+    dmsg = decode(msg)
     send(pid, {:rec_message, dmsg})
     rec_loop(socket, pid)
   end
@@ -55,40 +57,52 @@ defmodule ZmqEx do
     check_ready(socket)
   end
 
-  defp ready(socket), do: :gen_tcp.send(socket, <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", 0, 0, 0 ,0>>)
+  defp ready(socket),
+    do:
+      :gen_tcp.send(
+        socket,
+        <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", 0, 0, 0, 0>>
+      )
 
   def check_ready(socket) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
-    IO.inspect msg
+    IO.inspect(msg)
+
     case msg do
-      <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", _data :: binary >> -> :send
-      _ -> :dont_send
+      <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", _data::binary>> ->
+        true
+
+      _ ->
+        false
     end
   end
 
   def recv(socket, send?) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
-    IO.inspect msg
-    dmsg = decode msg
-    IO.inspect dmsg
-    if (send? == :send) do
-      reply = IO.gets "Please enter something: "
+    IO.inspect(msg)
+    dmsg = decode(msg)
+    IO.inspect(dmsg)
+
+    if send? == :send do
+      reply = IO.gets("Please enter something: ")
       enc_reply = encode(reply)
-      IO.inspect enc_reply
+      IO.inspect(enc_reply)
       :gen_tcp.send(socket, enc_reply)
     end
+
     # :gen_tcp.send(socket, msg)
     recv(socket, send?)
   end
 
-  def encode(msg), do: <<0, byte_size(msg) :: size(8), msg :: binary>>
+  def encode(msg), do: <<0, byte_size(msg)::size(8), msg::binary>>
 
-  def decode(<<4, s :: size(8),
-                comm_size, comm :: binary - size(comm_size),
-                comm_size_2, comm_2 :: binary - size(comm_size_2), 0, 0, 0,
-                comm_size_3, comm_3 :: binary - size(comm_size_3),
-                comm_size_4, comm_4 :: binary - size(comm_size_4),
-                body :: binary>>), do:
-    {s, comm, comm_2, comm_3, comm_4, body}
-  def decode(<<0, msg_size, msg :: binary - size(msg_size)>>), do: msg
+  def decode(
+        <<4, s::size(8), comm_size, comm::binary-size(comm_size), comm_size_2,
+          comm_2::binary-size(comm_size_2), 0, 0, 0, comm_size_3,
+          comm_3::binary-size(comm_size_3), comm_size_4, comm_4::binary-size(comm_size_4),
+          body::binary>>
+      ),
+      do: {s, comm, comm_2, comm_3, comm_4, body}
+
+  def decode(<<0, msg_size, msg::binary-size(msg_size)>>), do: msg
 end
