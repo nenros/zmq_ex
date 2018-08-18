@@ -12,7 +12,7 @@ defmodule ZmqEx do
     send? = start_connection(socket)
     spawn(fn -> rec_loop(socket, printer_process) end)
 
-    if send? == true do
+    if send? do
       send_loop(socket)
     end
   end
