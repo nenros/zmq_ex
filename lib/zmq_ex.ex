@@ -7,13 +7,22 @@ defmodule ZmqEx do
   """
   def start do
     opts = [:binary, active: false]
-    {:ok, socket} = :gen_tcp.connect('localhost', 5555, opts)
+    {:ok, socket} = connect(5555, opts)
+    # {:ok, socket} = :gen_tcp.connect('localhost', 5555, opts)
+    :gen_tcp.send(socket, "connected!")
     printer_process = spawn(fn -> printer_loop() end)
     send? = start_connection(socket)
     spawn(fn -> rec_loop(socket, printer_process) end)
 
-    if send? do
-      send_loop(socket)
+    # if send? do
+    send_loop(socket)
+    # end
+  end
+
+  defp connect(port, opts) do
+    case :gen_tcp.listen(port, opts) do
+      {:ok, s} -> :gen_tcp.accept(s)
+      _ -> :gen_tcp.connect('localhost', port, opts)
     end
   end
 
