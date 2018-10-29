@@ -1,4 +1,6 @@
 # ZmqEx
+[![CircleCI](https://circleci.com/gh/half-t/zmq_ex.svg?style=svg)](https://circleci.com/gh/half-t/zmq_ex)
+[![Coverage Status](https://coveralls.io/repos/github/nenros/zmq_ex/badge.svg?branch=master)](https://coveralls.io/github/half-t/zmq_ex?branch=master)
 
 **TODO: Add description**
 
