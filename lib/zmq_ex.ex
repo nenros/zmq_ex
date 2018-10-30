@@ -105,4 +105,9 @@ defmodule ZmqEx do
       do: {s, comm, comm_2, comm_3, comm_4, body}
 
   def decode(<<0, msg_size, msg::binary-size(msg_size)>>), do: msg
+
+  ## test version
+  def version do
+    0
+  end
 end

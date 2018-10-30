@@ -2,7 +2,7 @@ defmodule ZmqExTest do
   use ExUnit.Case
   doctest ZmqEx
 
-  test "greets the world" do
-    assert ZmqEx.hello() == :world
+  test "version" do
+    assert ZmqEx.version() == 0
   end
 end
