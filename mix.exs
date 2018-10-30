@@ -25,7 +25,8 @@ defmodule ZmqEx.MixProject do
     [
       {:junit_formatter, "~> 2.2", only: [:test]},
       {:excoveralls, "~> 0.10", only: :test},
-      {:credo, "~> 1.0.0-rc1", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.0.0-rc1", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.3", only: [:dev], runtime: false}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]

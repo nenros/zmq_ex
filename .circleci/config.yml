@@ -12,6 +12,7 @@ jobs:
       - run: mix deps.get
       - run: MIX_ENV=test JUNIT_DIR=~/junit mix coveralls.circle
       - run: mix credo --strict
+      - run: mix dialyzer
       - store_test_results:
           path: ~/junit
       - store_artifacts:
