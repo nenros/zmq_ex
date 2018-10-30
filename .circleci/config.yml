@@ -19,7 +19,7 @@ jobs:
       - run: mix local.hex --force
       - run: mix deps.get
       - run: mix format --check-formatted
-      - run: MIX_ENV=test mix coveralls.circle
+      - run: mix coveralls.circle
       - run: mix credo --strict
       - run: mix dialyzer
       - store_test_results:
