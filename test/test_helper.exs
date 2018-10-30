@@ -1,6 +1,6 @@
 formatters =
   case System.get_env("CI") do
-    true -> [JUnitFormatter, ExUnit.CLIFormatter]
+    "true" -> [JUnitFormatter, ExUnit.CLIFormatter]
     _ -> [ExUnit.CLIFormatter]
   end
 
