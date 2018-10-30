@@ -6,7 +6,6 @@ jobs:
     working_directory: ~/zmq_ex
     steps:
       - checkout
-      - run: mkdir -p ~/junit
       - restore_cache:
           keys:
             - v1-zmq_ex-{{ .Branch }}-{{ checksum "mix.lock" }}
@@ -17,13 +16,11 @@ jobs:
       - run: mix local.hex --force
       - run: mix deps.get
       - run: mix format --check-formatted
-      - run: MIX_ENV=test JUNIT_DIR=~/junit mix coveralls.circle
+      - run: MIX_ENV=test JUNIT_DIR=./test-results/junit mix coveralls.circle
       - run: mix credo --strict
       - run: mix dialyzer
       - store_test_results:
-          path: ~/junit
-      - store_artifacts:
-          path: ~/junit
+          path: test-results
       - save_cache:
           key: v1-zmq_ex-{{ .Branch }}-{{ checksum "mix.lock" }}
           paths:
