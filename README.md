@@ -21,6 +21,12 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/zmq_ex](https://hexdocs.pm/zmq_ex).
 
+## Additional tools
+
+    * Credo: `mix credo --strict` - a static code analysis tool for Elixir
+    * Dialyzer: `mix dialyzer` - a type checker
+    * Formatter: `mix format --check-formatted` - build in elixir formatter
+
 ## python enV
 
 ```

@@ -20,10 +20,7 @@ defmodule ZmqEx do
   defp printer_loop do
     receive do
       {:rec_message, value} ->
-        IO.puts("GOT MESSAGE!")
-        IO.inspect(value)
-        IO.puts("=======")
-        printer_loop()
+        IO.puts(value)
 
       _ ->
         IO.puts("wrong msg")
@@ -66,7 +63,6 @@ defmodule ZmqEx do
 
   def check_ready(socket) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
-    IO.inspect(msg)
 
     case msg do
       <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", _data::binary>> ->
@@ -79,14 +75,13 @@ defmodule ZmqEx do
 
   def recv(socket, send?) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
-    IO.inspect(msg)
     dmsg = decode(msg)
-    IO.inspect(dmsg)
+    IO.puts(dmsg)
 
     if send? == :send do
       reply = IO.gets("Please enter something: ")
       enc_reply = encode(reply)
-      IO.inspect(enc_reply)
+      IO.puts(enc_reply)
       :gen_tcp.send(socket, enc_reply)
     end
 
@@ -105,4 +100,9 @@ defmodule ZmqEx do
       do: {s, comm, comm_2, comm_3, comm_4, body}
 
   def decode(<<0, msg_size, msg::binary-size(msg_size)>>), do: msg
+
+  ## test version
+  def version do
+    0
+  end
 end
