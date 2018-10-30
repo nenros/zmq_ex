@@ -25,6 +25,7 @@ be found at [https://hexdocs.pm/zmq_ex](https://hexdocs.pm/zmq_ex).
 
     * Credo: `mix credo --strict` - a static code analysis tool for Elixir
     * Dialyzer: `mix dialyzer` - a type checker
+    * Formatter: `mix format --check-formatted` - build in elixir formatter
 
 ## python enV
 
