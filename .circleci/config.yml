@@ -3,6 +3,8 @@ jobs:
   build:
     docker:
       - image: circleci/elixir:1.7
+    environment:
+      MIX_ENV: test
     working_directory: ~/zmq_ex
     steps:
       - checkout
@@ -12,11 +14,12 @@ jobs:
             - v1-zmq_ex-{{ .Branch }}-
             - v1-zmq_ex-master-
             - v1-zmq_ex-
+      - run: mkdir -p ./test-results/mix
       - run: mix local.rebar --force
       - run: mix local.hex --force
       - run: mix deps.get
       - run: mix format --check-formatted
-      - run: MIX_ENV=test JUNIT_DIR=./test-results/junit mix coveralls.circle
+      - run: MIX_ENV=test mix coveralls.circle
       - run: mix credo --strict
       - run: mix dialyzer
       - store_test_results:
