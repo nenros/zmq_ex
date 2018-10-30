@@ -21,6 +21,7 @@ defmodule ZmqEx do
     receive do
       {:rec_message, value} ->
         IO.puts(value)
+
       _ ->
         IO.puts("wrong msg")
         printer_loop()
