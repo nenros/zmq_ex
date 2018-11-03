@@ -10,6 +10,9 @@ defmodule ZmqEx do
 
   @doc """
   """
+
+  require Logger
+
   def start_server do
     opts = [:binary, active: false]
 
@@ -45,13 +48,14 @@ defmodule ZmqEx do
     end
   end
 
-  defp printer_loop do
+  def printer_loop do
     receive do
-      {:rec_message, value} ->
-        IO.puts(value)
+      {:rec_message, msg} ->
+        Logger.debug(fn -> "Decoded message: #{inspect(msg)}" end)
+        printer_loop()
 
-      _ ->
-        IO.puts("wrong msg")
+      other ->
+        Logger.debug(fn -> "Undefined message: #{inspect(other)}" end)
         printer_loop()
     end
   end
