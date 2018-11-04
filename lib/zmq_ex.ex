@@ -3,6 +3,11 @@ defmodule ZmqEx do
   Documentation for ZmqEx.
   """
 
+  def version do
+    {:ok, vsn} = :application.get_key(:zmq_ex, :vsn)
+    List.to_string(vsn)
+  end
+
   @doc """
   """
   def start_server do
@@ -123,9 +128,4 @@ defmodule ZmqEx do
       do: {s, comm, comm_2, comm_3, comm_4, body}
 
   def decode(<<0, msg_size, msg::binary-size(msg_size)>>), do: msg
-
-  ## test version
-  def version do
-    0
-  end
 end

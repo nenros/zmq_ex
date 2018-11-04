@@ -3,6 +3,6 @@ defmodule ZmqExTest do
   doctest ZmqEx
 
   test "version" do
-    assert ZmqEx.version() == 0
+    assert ZmqEx.version() == "0.0.1"
   end
 end
