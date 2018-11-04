@@ -10,6 +10,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
+            - zmq_ex-deps-{{ checksum "mix.lock" }}
             - v1-zmq_ex-{{ .Branch }}-{{ checksum "mix.lock" }}
             - v1-zmq_ex-{{ .Branch }}-
             - v1-zmq_ex-master-
@@ -27,7 +28,7 @@ jobs:
       - store_artifacts:
           path: test-results
       - save_cache:
-          key: v1-zmq_ex-{{ .Branch }}-{{ checksum "mix.lock" }}
+          key: zmq_ex-deps-{{ checksum "mix.lock" }}
           paths:
-            - _build/
+            - deps/
 
