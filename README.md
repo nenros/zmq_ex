@@ -16,9 +16,15 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/zmq_ex](https://hexdocs.pm/zmq_ex).
+## Documentation
+
+```
+mix docs
+Docs successfully generated.
+View them at "doc/index.html".
+```
+
+Online documentation can be found at [https://hexdocs.pm/zmq_ex](https://hexdocs.pm/zmq_ex).
 
 ## Additional tools
 
