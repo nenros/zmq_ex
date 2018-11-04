@@ -24,6 +24,8 @@ jobs:
       - run: mix dialyzer
       - store_test_results:
           path: test-results
+      - store_artifacts:
+          path: test-results
       - save_cache:
           key: v1-zmq_ex-{{ .Branch }}-{{ checksum "mix.lock" }}
           paths:
