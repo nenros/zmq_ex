@@ -25,6 +25,7 @@ defmodule ZmqEx.MixProject do
 
   defp aliases do
     [
+      compile: ["compile --warnings-as-errors"],
       test: ["format --check-formatted", "credo --strict", "test"]
     ]
   end
