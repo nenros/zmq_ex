@@ -11,10 +11,11 @@ jobs:
       - restore_cache:
           keys:
             - zmq_ex-deps-{{ checksum "mix.lock" }}
-            - v1-zmq_ex-{{ .Branch }}-{{ checksum "mix.lock" }}
-            - v1-zmq_ex-{{ .Branch }}-
-            - v1-zmq_ex-master-
-            - v1-zmq_ex-
+      - restore_cache:
+          keys:
+            - zmq_ex-plt-{{ checksum "mix.lock" }}
+            - zmq_ex-plt-
+
       - run: mkdir -p ./test-results/mix
       - run: mix local.rebar --force
       - run: mix local.hex --force
@@ -22,13 +23,20 @@ jobs:
       - run: mix format --check-formatted
       - run: mix coveralls.circle
       - run: mix credo --strict
+
       - run: mix dialyzer
+
       - store_test_results:
           path: test-results
       - store_artifacts:
           path: test-results
+
       - save_cache:
           key: zmq_ex-deps-{{ checksum "mix.lock" }}
           paths:
             - deps/
+      - save_cache:
+          key: zmq_ex-plt-{{ checksum "mix.lock" }}
+          paths:
+            - _build/test/dialyxir_erlang-21.1.1_elixir-1.7.3_deps-test.plt
 
