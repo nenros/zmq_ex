@@ -6,13 +6,12 @@
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `zmq_ex` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `zmq_ex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:zmq_ex, "~> 0.1.0"}
+    {:zmq_ex, "~> 0.0.1"}
   ]
 end
 ```
