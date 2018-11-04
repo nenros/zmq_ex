@@ -10,6 +10,9 @@ defmodule ZmqEx do
 
   @doc """
   """
+
+  require Logger
+
   def start_server do
     opts = [:binary, active: false]
 
@@ -18,9 +21,8 @@ defmodule ZmqEx do
 
     :gen_tcp.send(socket, "connected!")
 
-    printer_process = spawn(fn -> printer_loop() end)
     send? = start_connection(socket)
-    spawn(fn -> rec_loop(socket, printer_process) end)
+    spawn(fn -> rec_loop(socket) end)
 
     send_loop(socket)
   end
@@ -31,9 +33,8 @@ defmodule ZmqEx do
 
     :gen_tcp.send(socket, "connected!")
 
-    printer_process = spawn(fn -> printer_loop() end)
     send? = start_connection(socket)
-    spawn(fn -> rec_loop(socket, printer_process) end)
+    spawn(fn -> rec_loop(socket) end)
 
     send_loop(socket)
   end
@@ -45,17 +46,6 @@ defmodule ZmqEx do
     end
   end
 
-  defp printer_loop do
-    receive do
-      {:rec_message, value} ->
-        IO.puts(value)
-
-      _ ->
-        IO.puts("wrong msg")
-        printer_loop()
-    end
-  end
-
   defp send_loop(socket) do
     reply = IO.gets("Please enter something: ")
     enc_reply = encode(reply)
@@ -63,11 +53,12 @@ defmodule ZmqEx do
     send_loop(socket)
   end
 
-  defp rec_loop(socket, pid) do
+  defp rec_loop(socket) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
+    Logger.debug(fn -> "Raw message: #{inspect(msg)}" end)
     dmsg = decode(msg)
-    send(pid, {:rec_message, dmsg})
-    rec_loop(socket, pid)
+    Logger.debug(fn -> "Decoded message: #{inspect(dmsg)}" end)
+    rec_loop(socket)
   end
 
   defp start_connection(socket) do
