@@ -10,7 +10,8 @@ defmodule ZmqEx.MixProject do
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [coveralls: :test],
-      description: description()
+      description: description(),
+      package: package()
     ]
   end
 
@@ -34,6 +35,14 @@ defmodule ZmqEx.MixProject do
   end
 
   defp description do
-    "Elixir ZeroMq implementation"
+    "Elixir ZeroMQ implementation"
+  end
+
+  defp package() do
+    [
+      licenses: ["MIT License"],
+      links: %{"GitHub" => "https://github.com/half-t/zmq_ex"},
+      maintainers: []
+    ]
   end
 end
