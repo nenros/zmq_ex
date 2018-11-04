@@ -26,6 +26,14 @@ View them at "doc/index.html".
 
 Online documentation can be found at [https://hexdocs.pm/zmq_ex](https://hexdocs.pm/zmq_ex).
 
+## Test
+
+```
+mix test
+```
+
+> Note: credo and formatter are added to test run
+
 ## Additional tools
 
 * Credo: `mix credo --strict` - a static code analysis tool for Elixir
