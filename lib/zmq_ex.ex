@@ -21,7 +21,7 @@ defmodule ZmqEx do
 
     :gen_tcp.send(socket, "connected!")
 
-    send? = start_connection(socket)
+    start_connection(socket)
     spawn(fn -> rec_loop(socket) end)
 
     send_loop(socket)
@@ -33,17 +33,10 @@ defmodule ZmqEx do
 
     :gen_tcp.send(socket, "connected!")
 
-    send? = start_connection(socket)
+    start_connection(socket)
     spawn(fn -> rec_loop(socket) end)
 
     send_loop(socket)
-  end
-
-  defp connect(port, opts) do
-    case :gen_tcp.listen(port, opts) do
-      {:ok, s} -> :gen_tcp.accept(s)
-      _ -> :gen_tcp.connect('localhost', port, opts)
-    end
   end
 
   defp send_loop(socket) do
@@ -80,7 +73,7 @@ defmodule ZmqEx do
         <<4, 41, 5, "READY", 11, "Socket-Type", 0, 0, 0, 6, "DEALER", 8, "Identity", 0, 0, 0, 0>>
       )
 
-  def check_ready(socket) do
+  defp check_ready(socket) do
     {:ok, msg} = :gen_tcp.recv(socket, 0)
 
     case msg do
@@ -92,31 +85,15 @@ defmodule ZmqEx do
     end
   end
 
-  def recv(socket, send?) do
-    {:ok, msg} = :gen_tcp.recv(socket, 0)
-    dmsg = decode(msg)
-    IO.puts(dmsg)
+  defp encode(msg), do: <<0, byte_size(msg)::size(8), msg::binary>>
 
-    if send? == :send do
-      reply = IO.gets("Please enter something: ")
-      enc_reply = encode(reply)
-      IO.puts(enc_reply)
-      :gen_tcp.send(socket, enc_reply)
-    end
+  defp decode(
+         <<4, s::size(8), comm_size, comm::binary-size(comm_size), comm_size_2,
+           comm_2::binary-size(comm_size_2), 0, 0, 0, comm_size_3,
+           comm_3::binary-size(comm_size_3), comm_size_4, comm_4::binary-size(comm_size_4),
+           body::binary>>
+       ),
+       do: {s, comm, comm_2, comm_3, comm_4, body}
 
-    # :gen_tcp.send(socket, msg)
-    recv(socket, send?)
-  end
-
-  def encode(msg), do: <<0, byte_size(msg)::size(8), msg::binary>>
-
-  def decode(
-        <<4, s::size(8), comm_size, comm::binary-size(comm_size), comm_size_2,
-          comm_2::binary-size(comm_size_2), 0, 0, 0, comm_size_3,
-          comm_3::binary-size(comm_size_3), comm_size_4, comm_4::binary-size(comm_size_4),
-          body::binary>>
-      ),
-      do: {s, comm, comm_2, comm_3, comm_4, body}
-
-  def decode(<<0, msg_size, msg::binary-size(msg_size)>>), do: msg
+  defp decode(<<0, msg_size, msg::binary-size(msg_size)>>), do: msg
 end

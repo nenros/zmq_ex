@@ -10,6 +10,7 @@ defmodule ZmqEx.MixProject do
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [coveralls: :test],
+      aliases: aliases(),
       description: description(),
       package: package()
     ]
@@ -19,6 +20,13 @@ defmodule ZmqEx.MixProject do
   def application do
     [
       extra_applications: [:logger]
+    ]
+  end
+
+  defp aliases do
+    [
+      compile: ["compile --warnings-as-errors"],
+      test: ["format --check-formatted", "credo --strict", "test"]
     ]
   end
 
