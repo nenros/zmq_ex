@@ -5,7 +5,7 @@ defmodule ZmqEx.MixProject do
     [
       app: :zmq_ex,
       version: "0.0.1",
-      elixir: "~> 1.5",
+      elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
